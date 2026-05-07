@@ -1,0 +1,299 @@
+PRÁTICA ANGULARJS - TEORIA APROFUNDADA
+
+================================================================================
+1. TWO-WAY DATA BINDING (O Coração do AngularJS)
+================================================================================
+{
+    JavaScript Puro (chato):
+    ----
+    document.getElementById('nome').addEventListener('change', function(e) {
+        document.getElementById('saudacao').textContent = 'Olá ' + e.target.value;
+    });
+
+    AngularJS (automático):
+    ----
+    <input ng-model="nome">
+    <p>{{saudacao}}</p>
+
+    $scope.nome = '';
+    $scope.$watch('nome', function(novoValor) {
+        $scope.saudacao = 'Olá ' + novoValor;
+    });
+
+    O que acontece: Quando você digita em <input>, o {{saudacao}} atualiza sozinho. 
+    É BIDIRECIONAL.
+}
+================================================================================
+2. MVC (Model-View-Controller)
+================================================================================
+{
+    ┌──────────────────────────────────────────┐
+    │              VIEW (HTML)                 │
+    │  <input ng-model="nome">                 │
+    │  {{preco | currency}}                    │
+    └─────────────────┬────────────────────────┘
+                    ↓ (Usuário interage)
+    ┌──────────────────────────────────────────┐
+    │          CONTROLLER (JavaScript)         │
+    │  $scope.nome = 'Produto';                │
+    │  $scope.calcularPreco();                 │
+    └─────────────────┬────────────────────────┘
+                    ↓ (Obtém dados)
+    ┌──────────────────────────────────────────┐
+    │         MODEL (Dados/Services)           │
+    │  $http.get('/api/produtos')              │
+    │  $scope.produtos = [{...}]               │
+    └──────────────────────────────────────────┘
+}
+================================================================================
+3. DIRECTIVES (Diretivas) - As Superpotências do HTML
+================================================================================
+{
+    ng-repeat: Repetir elementos
+    ----
+    <ul>
+    <li ng-repeat="producto in produtos">
+        {{producto.nome}} - R$ {{producto.preco}}
+    </li>
+    </ul>
+
+    ng-if: Mostrar/Esconder
+    ----
+    <p ng-if="usuarioLogado">Bem-vindo!</p>
+
+    ng-class: Aplicar classes CSS dinamicamente
+    ----
+    <div ng-class="{ativo: ativo, desabilitado: !ativo}">
+    Conteúdo
+    </div>
+
+    ng-click: Chamar função ao clicar
+    ----
+    <button ng-click="deletar(id)">Deletar</button>
+
+    ng-submit: Enviar formulário
+    ----
+    <form ng-submit="salvar()">
+    <input ng-model="nome">
+    <button type="submit">Salvar</button>
+    </form>
+
+    ng-show/ng-hide: Mostrar/Esconder com CSS
+    ----
+    <div ng-show="mensagem">{{mensagem}}</div>
+}
+================================================================================
+4. CONTROLLERS - A Lógica da App
+================================================================================
+{
+    app.controller('ProdutoCtrl', function($scope, $http) {
+    
+    // Dados
+    $scope.produtos = [];
+    $scope.novoProduto = {};
+    
+    // Funções
+    $scope.carregarProdutos = function() {
+        $http.get('/api/produtos').then(function(response) {
+        $scope.produtos = response.data;
+        });
+    };
+    
+    $scope.adicionarProduto = function() {
+        $http.post('/api/produtos', $scope.novoProduto)
+        .then(function() {
+            $scope.carregarProdutos(); // Recarregar lista
+            $scope.novoProduto = {}; // Limpar formulário
+        });
+    };
+    
+    // Executar ao iniciar o controller
+    $scope.carregarProdutos();
+    });
+}
+================================================================================
+5. SERVICES (Serviços) - Reutilizar Código
+================================================================================
+{
+    Definir serviço:
+    ----
+    app.service('ProdutoService', function($http) {
+    this.obterTodos = function() {
+        return $http.get('/api/produtos');
+    };
+    
+    this.salvar = function(produto) {
+        return $http.post('/api/produtos', produto);
+    };
+    });
+
+    Usar em múltiplos controllers:
+    ----
+    app.controller('ListaCtrl', function($scope, ProdutoService) {
+    ProdutoService.obterTodos().then(function(response) {
+        $scope.produtos = response.data;
+    });
+    });
+
+    app.controller('FormCtrl', function($scope, ProdutoService) {
+    $scope.salvar = function() {
+        ProdutoService.salvar($scope.produto);
+    };
+    });
+}
+================================================================================
+6. FILTERS (Filtros) - Formatar Dados
+================================================================================
+{
+    Maiúscula:
+    ----
+    <p>{{texto | uppercase}}</p>
+
+    Moeda:
+    ----
+    <p>R$ {{preco | currency}}</p>
+
+    Data formatada:
+    ----
+    <p>{{data | date:'dd/MM/yyyy'}}</p>
+
+    Limite de caracteres:
+    ----
+    <p>{{descricao | limitTo:50}}</p>
+
+    Ordenar:
+    ----
+    <ul>
+    <li ng-repeat="item in itens | orderBy:'preco'">
+        {{item.nome}} - R$ {{item.preco}}
+    </li>
+    </ul>
+
+    Filtrar:
+    ----
+    <input ng-model="filtro">
+    <ul>
+    <li ng-repeat="item in itens | filter:filtro">
+        {{item.nome}}
+    </li>
+    </ul>
+}
+================================================================================
+7. EXEMPLO COMPLETO INTEGRADO
+================================================================================
+{
+    <!DOCTYPE html>
+    <html ng-app="meuApp">
+        <head>
+            <script src="angular.js"></script>
+        </head>
+        <body>
+            <div ng-controller="ComprasCtrl">
+                
+                <!-- ADICIONAR PRODUTO -->
+                <form ng-submit="adicionarProduto()">
+                    <input ng-model="novoProduto.nome" placeholder="Nome">
+                    <input ng-model="novoProduto.preco" type="number" placeholder="Preço">
+                    <button type="submit">Adicionar</button>
+                </form>
+
+                <!-- LISTAR PRODUTOS -->
+                <h2>Produtos ({{produtos.length}})</h2>
+                <div ng-if="produtos.length === 0">
+                    <p>Nenhum produto</p>
+                </div>
+                
+                <ul>
+                    <li ng-repeat="p in produtos | orderBy:'-preco'">
+                    {{ p.nome | uppercase }} - 
+                    R$ {{ p.preco | currency }} 
+                    <button ng-click="deletar(p.id)">X</button>
+                    </li>
+                </ul>
+
+                <!-- TOTAL -->
+                <strong>Total: R$ {{produtos | sumTotal | currency}}</strong>
+            </div>
+
+            <script>
+                var app = angular.module('meuApp', []);
+
+                app.controller('ComprasCtrl', function($scope) {
+                    $scope.produtos = [
+                        {id: 1, nome: 'Banana', preco: 2.50},
+                        {id: 2, nome: 'Maçã', preco: 3.00}
+                    ];
+                    
+                    $scope.adicionarProduto = function() {
+                        $scope.produtos.push($scope.novoProduto);
+                        $scope.novoProduto = {};
+                    };
+                    
+                    $scope.deletar = function(id) {
+                            $scope.produtos = $scope.produtos.filter(p => p.id !== id);
+                        };
+                });
+
+                // Filtro customizado
+                app.filter('sumTotal', function() {
+                    return function(produtos) {
+                        return produtos.reduce((total, p) => total + p.preco, 0);
+                    };
+                });
+            </script>
+        </body>
+    </html>
+}
+================================================================================
+8. ANGULARJS + CORDOVA (Para AGROSYS)
+================================================================================
+{
+    ┌─────────────────────────────────┐
+    │  Cordova (Empacota tudo)        │
+    │  ┌───────────────────────────┐  │
+    │  │ HTML + AngularJS + CSS    │  │
+    │  │ ┌─────────────────────┐   │  │
+    │  │ │ Produtos            │   │  │
+    │  │ │ Pedidos             │   │  │
+    │  │ │ Consultas GPS       │   │  │
+    │  │ │ Câmera              │   │  │
+    │  │ └─────────────────────┘   │  │
+    │  └───────────────────────────┘  │
+    └─────────────────────────────────┘
+            ↓
+        APK/IPA App Mobile
+}
+================================================================================
+9. CONCEITOS IMPORTANTES
+================================================================================
+{
+    | Conceito  | O Quê                                | Quando Usar                     |
+    |-----------|--------------------------------------|---------------------------------|
+    | $scope    | Objeto que conecta View e Controller | Sempre, em todo controller      |
+    | $http     | Fazer requisições HTTP (GET, POST)   | Comunicar com backend           |
+    | ng-model  | Ligar input a variável               | Formulários                     |
+    | ng-repeat | Repetir elemento                     | Listas dinâmicas                |
+    | $watch    | Monitorar mudanças                   | Agir quando algo muda           |
+    | $digest   | Atualizar a View                     | Automático na maioria dos casos |
+}
+================================================================================
+10. RESUMO RÁPIDO
+================================================================================
+{
+    ✅ Vantagens:
+    - Código limpo e organizado
+    - Desenvolvimento rápido
+    - Comunidade grande
+    - Funciona bem com Cordova
+    - Validação built-in
+
+    ❌ Desvantagens:
+    - Curva de aprendizado
+    - Performance em apps muito grandes
+    - AngularJS é "antigo" (criado em 2009)
+    - Comunidade migrou para Angular 2+ e React/Vue
+
+    AngularJS = Framework que torna websites interativos sem recarregar a página
+    Especialmente útil quando combinado com Cordova para criar apps móveis dinâmicas 
+    com boa experiência do usuário.
+}

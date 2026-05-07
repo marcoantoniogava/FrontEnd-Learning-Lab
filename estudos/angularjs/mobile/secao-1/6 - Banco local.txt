@@ -1,0 +1,167 @@
+Banco de dados no Mobile (AngularJS + Cordova)
+
+O banco local é um banco de dados que roda dentro do próprio dispositivo do usuário, sem depender da internet.
+
+No caso da Agrosys, o banco é utilizado baseado em 
+> ! SQLITE ! <
+
+-------------------------------------------------------
+
+exemplo simples {
+    sem banco local:
+    app → internet → servidor → resposta
+
+    com banco local:
+    app → banco no celular → resposta imediata
+}
+
+-------------------------------------------------------
+
+por que usar banco local? {
+    1 - funcionar offline
+
+    2 - performance
+        leitura local é muito mais rápida do que realizar requisições a servidores remotos, pois elimina latência de rede e processamento externo
+
+    3 - reduzir consumo de dados
+        não precisa bater na API toda hora
+
+    4 - sincronização controlada
+        você decide quando enviar/receber dados
+}
+
+-------------------------------------------------------
+
+arquitetura típica {
+    Controller
+    ↓
+    Service (ex: sql, comunica)
+    ↓
+    Banco SQLite
+    ↓
+    Retorno → Controller → Tela
+}
+
+-------------------------------------------------------
+
+como o sqlite funciona no cordova {
+    não é usado SQLite direto.
+
+    é utilizado um plugin
+
+    exemplo comum: 
+    cordova-plugin-sqlite-storage
+
+    o que o plugin faz
+    ele conecta:
+    JavaScript
+    ↓
+    Plugin Cordova
+    ↓
+    Código nativo (Android/iOS)
+    ↓
+    SQLite real
+}
+
+-------------------------------------------------------
+
+estrutura do banco {
+    o banco funciona com tabelas, igual banco tradicional
+
+    exemplo de tabela
+    CREATE TABLE clientes (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        email TEXT
+    );
+}
+
+-------------------------------------------------------
+
+operações básicas (CRUD) {
+    CREATE (inserir)
+    INSERT INTO clientes (nome, email)
+    VALUES ('Nícolas', 'email@email.com');
+    READ (buscar)
+    SELECT * FROM clientes;
+    UPDATE (atualizar)
+    UPDATE clientes
+    SET nome = 'Novo Nome'
+    WHERE id = 1;
+    DELETE (deletar)
+    DELETE FROM clientes
+    WHERE id = 1;
+
+    no AngularJS (nosso caso)
+
+    usa algo tipo:
+
+    sql.select(...)
+    sql.insert(...)
+    sql.update(...)
+    sql.delete(...)
+
+    exemplo real
+    sql.select(classe, where, callback);
+
+    explicando
+    classe → representa a tabela
+    where → filtro SQL
+    callback → função que recebe resultado
+}
+
+-------------------------------------------------------
+
+tudo no banco local é ASSÍNCRONO {
+    o que isso significa
+
+    isso NÃO funciona:
+
+    var dados = sql.select(...);
+
+    o certo é:
+
+    sql.select(..., function(resultado) {
+        console.log(resultado);
+    });
+    
+    por quê?
+    porque o banco leva tempo para responder
+    então você precisa esperar o retorno
+}
+
+-------------------------------------------------------
+
+fluxo completo {
+    Controller chama select
+    ↓
+    Service executa query
+    ↓
+    SQLite processa
+    ↓
+    Resultado volta via callback
+    ↓
+    Controller recebe
+    ↓
+    Tela atualiza
+}
+
+-------------------------------------------------------
+
+boas práticas {
+    ✔️ usar service para banco
+
+    ❌ controller faz SQL direto
+
+    ✔️ certo:
+
+    controller → service → banco
+
+    ✔️ tratar erro sempre
+
+    ✔️ organizar queries
+    não sair espalhando SQL no código
+
+    ✔️ usar padrão de status em sincronizações
+}
+

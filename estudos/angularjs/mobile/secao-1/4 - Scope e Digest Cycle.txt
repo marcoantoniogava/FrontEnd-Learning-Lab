@@ -1,0 +1,610 @@
+________________________________________________________________________________
+
+1 - O que é $scope {
+    o $scope é o objeto de contexto entre a view e o controller
+    ele é o lugar onde você coloca dados e funções para a tela acessar.
+
+    exemplo:
+
+    app.controller('LoginCtrl', function($scope) {
+        $scope.usuario = 'Nícolas';
+
+        $scope.entrar = function() {
+            console.log('Entrou');
+        };
+    });
+
+    na view:
+
+    <div ng-controller="LoginCtrl">
+        <p>{{ usuario }}</p>
+        <button ng-click="entrar()">Entrar</button>
+    </div>
+
+    - o controller recebe um $scope
+    - você adiciona propriedades nele
+    - a view enxerga essas propriedades
+    - se a view muda algo, o Angular tenta refletir no $scope
+    - se o $scope muda, a view é atualizada
+}
+
+________________________________________________________________________________
+
+2 - Como o AngularJS cria o $scope {
+    quando o Angular encontra uma parte da tela com algo como:
+
+    <div ng-controller="PedidoCtrl">
+
+    ele:
+
+    - cria ou reutiliza um scope
+    - instancia o controller
+    - injeta esse $scope no controller
+    - compila a view
+    - liga bindings e watchers
+    - começa a sincronização entre view e model
+
+    exemplo:
+
+    app.controller('PedidoCtrl', function($scope) {
+        $scope.total = 0;
+    });
+}
+
+________________________________________________________________________________
+
+3 - O $scope não é só um objeto comum {
+    embora pareça um objeto normal, ele tem comportamento interno do Angular
+
+    ele possui recursos como:
+
+    - armazenamento de dados
+    - herança prototípica
+    - sistema de eventos
+    - watchers
+    - integração com digest cycle
+    - destruição automática com $destroy
+
+    então ele não é só:
+
+    var obj = {};
+
+    ele é um objeto especial criado pelo Angular para participar do mecanismo de atualização da interface
+}
+
+________________________________________________________________________________
+
+4 - Papel do $scope no ciclo de vida do AngularJS {
+    quando falamos do ciclo de vida da tela no AngularJS, o $scope participa principalmente nesses momentos:
+
+    1. criação do scope
+    quando uma área da DOM é processada pelo Angular
+
+    2. ligação com controller/directive
+    o scope passa a ser o contexto da view
+
+    3. registro de watchers
+    expressões da view e watchers manuais ficam observando mudanças no scope
+
+    4. digest cycle (!!!!!!!!!!!! importante !!!!!!!!!!!!) 
+    Angular usa um sistema chamado digest cycle
+    o digest cycle é o processo em que o Angular percorre os watchers para descobrir se algo mudou
+    é um loop que fica rodando e perguntando:
+    "alguma variável mudou?"
+    "alguma variável mudou?"
+    "alguma variável mudou?"
+    
+    Angular roda o digest quando você usa:
+    - ng-click
+    - $http
+    - $timeout
+    - $interval
+    - eventos do Angular
+    
+    nesses casos, você NÃO precisa fazer nada
+    
+    o $scope é onde grande parte dessas mudanças vivem
+    
+    exemplo conceitual:
+    Angular observa expressões como:
+    - {{ nome }}
+    - {{ totalPedido }}
+    - {{ cliente.cidade }}
+    - ng-show="carregado"
+    - ng-repeat="item in itens"
+
+    essas expressões viram observações associadas ao scope
+
+    durante o digest, o Angular compara:
+    - valor antigo
+    - valor atual
+
+    se mudou, ele atualiza a view e continua rodando até estabilizar
+
+    problema: código externo ao Angular
+    exemplo:
+    - setTimeout(...)
+    - cordova.plugin.http(...)
+    - eventListener(...)
+    Angular NÃO sabe que isso aconteceu
+
+    então o que acontece?
+    $scope.nome = "Nícolas";
+    valor muda no JS mas a tela NÃO atualiza
+
+    solução: $scope.$apply()
+    $scope.$apply(function() {
+        $scope.nome = "Nícolas";
+    });
+
+    isso fala pro Angular:
+    "ei, roda o digest aí porque eu mexi em algo"
+
+    então por que $timeout resolve?
+    porque internamente ele faz isso:
+    - executa função
+    - chama $apply automaticamente
+    - atualiza tela
+
+    resumo mental:
+    - mudou variável dentro do Angular → funciona automático
+    - mudou fora do Angular → precisa avisar ($apply)
+
+    o two-way binding só funciona quando o Angular está ciente da mudança
+
+    use $apply() quando:
+    - estiver fora do Angular (cordova, plugin, setTimeout)
+
+    use $timeout quando:
+    - quiser delay + integração com Angular
+
+    NÃO use nada quando:
+    - já estiver dentro de Angular (ng-click, service, etc)
+
+    Angular só atualiza a tela quando ele sabe que algo mudou
+    se a mudança acontece fora dele, você precisa avisar usando $apply()
+    $timeout já faz isso automaticamente
+
+    diferença entre $digest e $apply (isso aqui é !!! importante !!!):
+
+    $digest()
+    - roda digest no scope atual e nos filhos dele
+
+    $apply()
+    - executa uma função e depois dispara digest a partir do root, pegando o sistema todo
+
+    na prática, normalmente você usa $apply, não $digest
+
+    cuidado com erro clássico: $digest already in progress
+
+    se você chamar $apply quando o Angular já estiver em digest, pode dar erro
+
+    exemplo ruim:
+    $scope.$apply(function() {
+        $scope.nome = 'x';
+    });
+
+    isso pode quebrar se já estiver dentro de um ng-click, $http, $timeout, etc.
+
+    por isso, no AngularJS legado, muita gente usa:
+    if (!$scope.$$phase) {
+        $scope.$apply();
+    }
+
+    ou melhor ainda, usa $timeout, porque ele já integra com Angular
+
+    5. atualização da view
+    se mudou, a tela é renderizada de novo naquelas partes afetadas
+
+    6. destruição do scope
+    quando aquela parte da tela sai da DOM ou muda de rota
+}
+
+________________________________________________________________________________
+
+5 - O fluxo real na prática {
+
+    app.controller('ProdutoCtrl', function($scope) {
+        $scope.nome = 'Notebook';
+
+        $scope.alterarNome = function() {
+            $scope.nome = 'Teclado';
+        };
+    });
+    <div ng-controller="ProdutoCtrl">
+        <p>{{ nome }}</p>
+        <button ng-click="alterarNome()">Alterar</button>
+    </div>
+
+    fase 1 — compilação
+
+    o Angular lê a DOM e vê ng-controller, ng-click, {{ nome }}
+
+    fase 2 — criação do scope
+
+    ele cria um scope para esse contexto
+
+    fase 3 — instanciação do controller
+
+    injeta $scope em ProdutoCtrl
+
+    fase 4 — binding
+
+    ele registra que {{ nome }} depende de scope.nome
+
+    fase 5 — digest
+
+    Angular verifica os valores observados
+
+    fase 6 — renderização
+
+    mostra Notebook
+
+    fase 7 — interação do usuário
+
+    usuário clica no botão
+
+    fase 8 — mudança no scope
+
+    $scope.nome = 'Teclado'
+
+    fase 9 — novo digest
+
+    Angular detecta a mudança
+
+    fase 10 — view atualizada
+
+    a tela mostra Teclado
+
+    isso é o ciclo vivo do AngularJS operando com $scope
+}
+
+________________________________________________________________________________
+
+6 - watchers e $scope{
+    cada binding importante cria um watcher ou participa desse sistema
+    watchers são “observadores” de variáveis do AngularJS
+
+    eles ficam monitorando valores (do $scope, por exemplo) pra saber:
+    “isso mudou?”
+
+    você também pode criar um manualmente com $watch
+
+    app.controller('TesteCtrl', function($scope) {
+        $scope.valor = 10;
+
+        $scope.$watch('valor', function(novo, antigo) {
+            console.log('Mudou de', antigo, 'para', novo);
+        });
+    });
+    o que isso faz
+
+    sempre que valor mudar e houver digest, essa função é executada
+
+    o $watch não fica “escutando” em tempo real igual um event listener nativo
+
+    ponto técnico importante:
+    o Angular não detecta mudança magicamente no instante exato
+
+    ele detecta quando roda o digest cycle
+
+    então a lógica correta é:
+
+    - algo muda
+    - Angular inicia digest
+    - watchers são avaliados
+    - mudanças são percebidas
+}
+
+________________________________________________________________________________
+
+7 - herança de scopes {
+    
+    os scopes no AngularJS seguem herança prototípica
+
+    ou seja, um scope filho pode acessar propriedades do scope pai
+
+    exemplo
+    app.controller('PaiCtrl', function($scope) {
+        $scope.nome = 'Pai';
+    });
+    <div ng-controller="PaiCtrl">
+        {{ nome }}
+
+        <div ng-controller="FilhoCtrl">
+            {{ nome }}
+        </div>
+    </div>
+
+    mesmo que FilhoCtrl não defina nome, ele consegue ler do pai
+
+    no angularjs, cada $scope é como se fosse um objeto javascript normal
+
+    e a herança dele funciona via prototype chain (igual JS puro)
+
+    ou seja:
+
+    filho.__proto__ = pai;
+
+    isso significa:
+
+    se o filho não tem uma propriedade
+    ele sobe na cadeia e tenta pegar do pai
+
+    quando o filho escreve em um valor primitivo, ele pode sombrear o valor do pai
+
+    exemplo
+    app.controller('PaiCtrl', function($scope) {
+        $scope.nome = 'Nícolas';
+    });
+
+    app.controller('FilhoCtrl', function($scope) {
+    });
+
+    na view:
+
+    <div ng-controller="PaiCtrl">
+        <input ng-model="nome">
+
+        <div ng-controller="FilhoCtrl">
+            <input ng-model="nome">
+        </div>
+    </div>
+
+    isso pode gerar comportamento estranho, porque o filho cria sua própria propriedade nome
+
+    por isso existe a “dot rule”
+
+    boa prática profissional em AngularJS:
+
+    em vez de usar:
+
+    $scope.nome = 'Nícolas';
+
+    prefira:
+
+    $scope.vm = {};
+    $scope.vm.nome = 'Nícolas';
+
+    ou melhor ainda:
+
+    var vm = $scope.vm = {};
+    vm.nome = 'Nícolas';
+
+    assim, quando scopes filhos acessam vm.nome, todos apontam para o mesmo objeto, evitando bugs de herança
+
+    isso é MUITO importante em formulários, ng-repeat, nested controllers e diretivas
+
+    pai:
+    vm.nome = 'Nícolas';
+
+    filho:
+    <input ng-model="vm.nome">
+
+    quando o filho altera:
+
+    ele NÃO cria vm novo
+    ele acessa o MESMO objeto do pai
+}
+
+________________________________________________________________________________
+
+8 - $scope em diretivas {
+    diretivas podem:
+
+    usar o mesmo scope do pai
+    criar scope filho
+    criar scope isolado
+
+    isso muda bastante o comportamento da tela
+
+    exemplo de scope herdado
+    app.directive('meuBloco', function() {
+        return {
+            restrict: 'E',
+            template: '<p>{{ nome }}</p>'
+        };
+    });
+
+    essa diretiva usa o scope do contexto onde foi colocada
+
+    exemplo com scope: true
+    app.directive('meuBloco', function() {
+        return {
+            restrict: 'E',
+            scope: true,
+            template: '<p>{{ nome }}</p>'
+        };
+    });
+
+    agora ela cria um scope filho
+}
+
+________________________________________________________________________________
+
+9 - destruição do scope: $destroy {
+    quando uma rota muda, uma diretiva sai da tela ou um bloco some, o scope correspondente é destruído
+
+    o Angular dispara o evento:
+
+    $scope.$on('$destroy', function() {
+        console.log('scope destruído');
+    });
+
+    isso é importante para limpar recursos como:
+
+    - listeners manuais
+    - intervalos
+    - timeouts externos
+    - plugins Cordova
+    - callbacks
+    - sockets
+    - observers
+
+    exemplo:
+    app.controller('MapaCtrl', function($scope, $interval) {
+        var timer = $interval(function() {
+            console.log('rodando');
+        }, 1000);
+
+        $scope.$on('$destroy', function() {
+            $interval.cancel(timer);
+        });
+    });
+
+    se não limpar, você pode gerar vazamento de memória e comportamento fantasma
+    no mobile híbrido isso é ainda mais importante
+}
+
+________________________________________________________________________________
+
+10 - onde o $scope perdeu espaço com o tempo {
+    em AngularJS mais antigo, $scope era o padrão dominante
+    depois, com a evolução do framework, ficou mais comum usar:
+
+    - controllerAs
+    - var vm = this
+    - components
+    - menos dependência de $scope diretamente
+
+    exemplo moderno dentro do AngularJS legado
+    em vez de:
+
+    app.controller('ClienteCtrl', function($scope) {
+        $scope.nome = 'joão';
+    });
+
+    ficou mais comum:
+
+    app.controller('ClienteCtrl', function() {
+        var vm = this;
+        vm.nome = 'joão';
+    });
+
+    view:
+
+    <div ng-controller="ClienteCtrl as vm">
+        {{ vm.nome }}
+    </div>
+
+    por que isso melhorou
+    - reduz confusão com herança de scope
+    - deixa o código mais previsível
+    - melhora legibilidade
+    - aproxima mais de orientação a objeto e components
+    - fica melhor pro mercado e manutenção
+}
+
+________________________________________________________________________________
+
+11 - erros comuns envolvendo $scope {
+    1. colocar regra de negócio pesada no scope
+
+    errado:
+
+    $scope.calcularPreco = function() {
+        // lógica gigante
+    };
+
+    melhor:
+
+    scope só expõe
+    service faz regra de negócio
+
+    2. usar muito $watch
+
+    watch demais degrada performance, ainda mais em telas grandes ou mobile
+
+    3. esquecer limpeza no $destroy
+
+    gera memory leak
+
+    4. alterar scope fora do Angular sem $apply
+
+    a view não atualiza
+
+    5. usar valores primitivos em hierarquia de scopes
+
+    gera bug de shadowing
+}
+
+________________________________________________________________________________
+
+EXTRA -> $rootScope {
+    O $rootScope é o scope principal da aplicação AngularJS
+    Todos os outros $scope herdam dele.
+
+    hierarquia de scopes
+    $rootScope
+    ↓
+    Controller A ($scope)
+    ↓
+    Controller B ($scope)
+    isso é herança prototípica
+
+    ------------exemplo------------
+    app.run(function($rootScope) {
+        $rootScope.usuarioLogado = "Nícolas";
+    });
+    
+    <div ng-controller="CtrlA">
+        {{ usuarioLogado }}
+    </div>
+
+    quando usar $rootScope
+    ✔️ usos válidos
+    - dados globais (ex: usuário logado)
+    - eventos globais
+    - configuração geral
+    ❌ quando NÃO usar
+    - regra de negócio
+    - dados específicos de tela
+    - comunicação entre controllers (preferir service)
+
+    problema clássico
+
+    uso excessivo de $rootScope:
+    $rootScope.lista = [];
+    $rootScope.dados = {};
+    $rootScope.tudo = ...
+
+    isso vira:
+    código acoplado
+    difícil de manter
+    difícil de debugar
+
+    eventos com $rootScope
+
+    Angular permite comunicação global via eventos:
+    ------------exemplo------------
+    $rootScope.$broadcast('eventoGlobal');
+    $scope.$on('eventoGlobal', function() {
+        console.log('recebido');
+    });
+
+    tipos de eventos
+    $broadcast → de cima pra baixo
+    $emit → de baixo pra cima
+
+    relação com digest cycle
+
+    como $rootScope participa do ciclo:
+    quando ele muda → todos os scopes filhos são impactados
+
+    ou seja:
+
+    - mais watchers
+    - mais impacto na performance
+    - cuidado com performance
+
+    quanto mais coisa no $rootScope:
+    - mais pesado fica o digest cycle
+
+    boa prática profissional
+    - usar $rootScope com moderação
+    - preferir service para compartilhar dados
+    - usar apenas para estado global real
+
+    se é global → pode usar $rootScope
+    se é específico → use $scope ou service
+}

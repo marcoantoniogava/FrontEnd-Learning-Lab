@@ -1,0 +1,60 @@
+1 - AngularJS é um framework JavaScript que permite criar aplicações web dinâmicas, ligando o HTML ao JavaScript através de data binding, controllers e outros artefatos.
+
+2 - o módulo é o container principal da aplicação, onde são registrados todos os artefatos (controllers, services, directives, etc)
+
+3 - angular.module('app', []) → CRIA o módulo
+angular.module('app') → RECUPERA um módulo já existente
+
+5 - cria o módulo principal, define dependências e inicializa a aplicação
+
+6 - controller gerencia a interação da view, enquanto service centraliza lógica reutilizável e acesso a dados
+
+7 - porque o controller deve ter um código pequeno e serve para ligar a view com o javascript, não para definir lógicas de negócios completas.
+
+8 - função é acionada no HTML, é recebida no controller, chama a lógica de negócio, retorna a lógica de negócio para o controller, HTML é atualizado com a informação recebida.
+
+9 - factory → você controla o retorno
+service → Angular instancia com new
+na prática, os dois fazem a mesma coisa, a diferença é mais de estilo
+
+10 - controller -> logica da tela, 
+service -> lógica/dados reutilizáveis na aplicação, 
+components -> criar componentes, 
+directive -> definir comportamento de um elemento
+
+11 - Esse é o conceito de interpolação, essa variável entre chaves é conectada ao scope do controller respectivo à tela, é basicamente uma forma de exibir o valor JavaScript no HTML.
+
+12 - Two-way data binding é o termo usado pra representar a atualização em duas direções: da view para o JavaScript e vice-versa
+
+13 - ng-model é um atributo utilizado em inputs para vincular uma variável dentro do scope ao campo, as chaves são utilizadas para exibir o valor javascript no html. ng-model faz ligação de dados, normalmente em campos de formulário, inclusive permitindo edição.
+{{ }} apenas exibe o valor na view, {{ }} não captura entrada do usuário.
+
+14 - atualiza caso esteja dentro do contexto angular ou quando aplicam um digest cycle é disparado, como $timeout, caso não, é necessário chamar a função $scope.$apply(); para atualizar. 
+
+15 - digest cycle refere-se ao processo do AngularJS de percorrer os watchers da aplicação e perceber se algo mudou, caso sim, atualiza a view e o Angular repete verificações enquanto detecta mudanças, até que não haja mais alterações ou atinja o limite de segurança.
+
+16 - cada binding importante do AngularJS cria um watcher, eles são observadores de variáveis, monitorando-as e verificando se os valores delas mudaram. quanto mais watchers, mais trabalho no digest, e isso pode deixar a aplicação lenta, especialmente em telas grandes.
+
+17 - o Angular roda o digest automaticamente em eventos e serviços integrados ao framework, como ng-click, $timeout, $http, $interval, promises do Angular etc.
+
+18 - em funções javascripts nativas que não chamam o digest cycle do angular
+
+19 - $apply() força o Angular a iniciar um ciclo de atualização.
+$timeout agenda uma execução futura e já integra isso com o Angular, disparando o ciclo automaticamente quando necessário.
+
+20 - "$digest already in progress" porque você tentou iniciar um novo ciclo enquanto outro ainda está executando.
+
+---------------------------------------------------------------
+
+perguntas que não encontrei resposta no arquivo indicado:
+4. O que acontece se o módulo principal não for encontrado pelo ng-app? (Teoria_do_AngularJS.txt) 
+
+Resposta:
+o AngularJS não consegue inicializar a aplicação, e nada funciona (controllers, bindings, directives não são carregados)
+
+na prática:
+- erro no console
+- HTML vira "estático"
+- Angular não roda
+
+---------------------------------------------------------------

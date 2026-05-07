@@ -1,0 +1,106 @@
+Apache Cordova é um [framework de desenvolvimento móvel híbrido]1 e [open source]2 
+que permite criar aplicativos multiplataforma usando tecnologias web padrão 
+como HTML5, CSS3 e JavaScript. Mantido pela Apache Software Foundation, ele 
+[empacota app web em contêineres nativos]3, proporcionando [acesso às APIs e 
+recursos dos dispositivos]4.
+
+[1] - Um framework híbrido significa que você usa tecnologias web 
+(HTML, CSS, JavaScript) para criar apps que rodam em dispositivos móveis.
+Não produz um (app nativo)1 puro, e sim (apps híbridos)2.
+(1) - Um app nativo é produzido para uma plataforma em específico com linguagens
+de programação específicas, como iOS: Swift; Android: Kotlin; Windows Phone: Feito em C#.
+eles são: 
+- otimizados 100% para a plataforma, 
+- possuem melhor performance, 
+- acessa tudo que o dispositivo oferece nativamente, 
+- são disponibilizados apenas na plataforma respectiva,
+- são mais caros e demorados.
+(2) - Um app híbrido (CORDOVA por ex.) é feito em JavaScript/HTML/CSS, 
+mas disfarçado de nativo (saBOR NATIVO). É um app que você empacota em um container
+nativo e publica na App Store/Google Play.
+Segue fluxo:
+    Seu código (HTML/CSS/JS)
+         ↓
+   [Empacota com Cordova]
+         ↓
+   APK/IPA (arquivo app) -> APK = Android Package (para Android); IPA = iOS App Store Package (para iOS)
+         ↓
+   Publica na loja
+         ↓
+   Usuário baixa e instala
+-------------------------
+caracteristicas:
+- mesmo código em várias plataformas
+- performance um pouco menor (rodar em (webview)1 custa)
+- mais barato e rápido de desenvolver
+- precisa de plugins para acessar recursos nativos.
+exemplos: Cordova, Ionic e React Native (esse não usa WebView).
+(1) - Navegador normal (Chrome, Firefox)
+    ↓
+    └─ Você digita URL, vê site
+    
+    WebView (dentro do app)
+    ↓
+    └─ Seu app roda HTML/CSS/JS dentro dele
+---------------------------------------------
+Webview = uma "janela" que sabe interpretar HTML, CSS e JavaScript
+Quando você abre um app feito em Cordova:
+Não está vendo um navegador
+Mas por trás, há uma webview renderizando seu código
+
+[2] - Open source quer dizer que o código do Cordova está aberto e disponível para todos verem, 
+modificarem e usarem gratuitamente. Qualquer um pode contribuir, corrigir bugs, sugerir melhorias. 
+Não há empresa dona cobrando licença. Na prática, o utilizador do framework não paga nada e a 
+comunidade ajuda a evoluir a ferramenta.
+Open source é bom porque:
+- De graça
+- Pode confiar (é transparente)
+- Comunidade ajuda
+Mas tem riscos:
+- Ninguém é obrigado a ajudar
+- Pode ficar sem suporte
+- Documentação pode ser ruim
+Cordova funcionou bem porque: A comunidade mobile é grande e mantém viva a ferramenta.
+
+[3] - Truque principal do cordova: 
+    Seu código (HTML/CSS/JS)
+        ↓
+   [Cordova empacota]
+        ↓
+    Contêiner nativo iOS/Android
+        ↓
+    App funciona no celular
+-------------------------
+O que acontece:
+- Seu app web roda dentro de um (webview)1 (basicamente um navegador invisível)
+- O Cordova cria uma "casca" nativa ao redor desse webview
+- Essa casca nativa faz o app se comportar como um app verdadeiro (acesso à loja, ícone, etc.)
+- Resultado: parece um app nativo, mas é web por dentro.
+
+[4] - O celular tem coisas que um site normal não pode acessar: câmera, GPS, contatos, bateria, etc.
+Como funciona:
+    JavaScript (seu código)
+            ↓
+    [Plugins Cordova]
+            ↓
+    (Código nativo (iOS/Android))1 
+            ↓
+    Recursos do dispositivo (câmera, GPS, etc)
+-------------------------
+Na prática:
+- Você usa plugins (pequenos programas que o Cordova oferece)
+- Exemplo: navigator.geolocation.getCurrentPosition() -> 
+plugin envia ordem para o código nativo -> 
+acessa o GPS real -> 
+retorna a localização para seu JS
+(1) - O código nativo é código escrito na linguagem própria da plataforma.
+Como Cordova Usa Isso 
+-> Cordova não produz código nativo automaticamente! Segue o processo:
+1 Você escreve em Javascript
+"navigator.camera.getPicture()"
+2 Cordova lê essa chamada
+3 Procura um PLUGIN que sabe fazer isso
+4 O plugin contém código nativo já pronto
+5 Plugin chama o código nativo
+6 Código nativo acessa a câmera de verdade
+7 Retorna a foto.

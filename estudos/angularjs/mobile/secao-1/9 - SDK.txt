@@ -1,0 +1,61 @@
+O que é um SDK?
+
+Significa Software Development kotlin
+É um conjunto de ferramentas que permite você desenvolver para uma plataforma
+
+Android SDK
+Permite criar apps Android
+tem:
+- APIs do sistema
+- ferramentas de build
+- emulador
+- bibliotecas
+
+    No contexto de cordova
+
+Com cordova build android
+É usado:
+- Cordova
+- Gradle
+- Android SDK
+
+    O que vem dentro de um SDK
+
+1 - APIs
+funções prontas
+exemplo:
+- getLocation()
+- openCamera()
+
+2 - ferramentas
+- compilador
+- build tools
+- debug
+
+3 - bibliotecas
+
+4 - documentação
+
+5 - exemplos de código pronto
+
+SDK = Tudo que você precisa para programar para uma plataforma
+
+quando você usa:
+cordova plugin camera
+
+por baixo:
+plugin → chama código nativo → usa Android SDK
+
+    Versão de SDK
+
+exemplo:
+
+compileSdkVersion 33
+targetSdkVersion 33
+minSdkVersion 21
+
+o que isso significa
+
+compileSdk → versão usada pra compilar
+targetSdk → versão que você suporta
+minSdk → versão mínima do Android

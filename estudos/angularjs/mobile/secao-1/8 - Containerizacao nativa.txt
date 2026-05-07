@@ -1,0 +1,111 @@
+Container é uma caixa isolada que contém tudo que a aplicação precisa para rodar:
+- Código
+- Dependências
+- Sistema operacional mínimo
+- Configurações
+
+Analogia: Um container de carga de navio 
+-> Você coloca suas coisas dentro, ele funciona da mesma forma em qualquer porto,
+o transporte não precisa saber o que tem dentro e garante que o conteúdo chegará intacto.
+
+No desenvolvimento Mobile/Cordova:
+1 - Container do Ambiente de build
+Um container Docker com tudo pré-configurado:
+┌─────────────────────────────┐
+│  CONTAINER CORDOVA          │
+├─────────────────────────────┤
+│ - Node.js                   │
+│ - Cordova CLI               │
+│ - Android SDK               │
+│ - JDK (Java)                │
+│ - Gradle                    │
+│ - iOS SDK (se macOS)        │
+└─────────────────────────────┘
+2 - Container da aplicação final
+Depois de fazer o build (APK/IPA), pode empacotar novamente:
+┌──────────────────────────────┐
+│  CONTAINER APP MOBILE        │
+├──────────────────────────────┤
+│ - APK/IPA compilado          │
+│ - Assets                     │
+│ - Configurações              │
+│ - Scripts de deploy          │
+└──────────────────────────────┘
+Resumo:
+Container - ambiente completo isolado
+Na prática - Docker/Podman/LXC
+Para mobile - Garante build consistente e deploy automático
+
+! Empacotar em um container nativo:
+
+Na teoria
+Containerização nativa refere-se ao empacotamento completo de uma aplicação junto com:
+- Seu código-fonte
+- Dependências (bibliotecas, frameworks)
+- Runtime (ambiente de execução)
+- Sistema de arquivos isolado
+- Configurações de ambiente
+Isso cria um ambiente isolado e portável que funciona da mesma forma em qualquer máquina
+(desenvolvimento, testes, produção)
+
+No contexto de Cordova/Mobile:
+APK/IPA em container: empacotar a build final em um container Docker para
+deploy/distribuição
+Build environment: usar container para garantir que o build do Cordova tenha
+todas as dependências corretas (JDK, SDK, Android, etc.)
+
+Sem container: Você instala JDK, SDK Android, Gradle, Node... (2-3 horas)
+Com container: docker run -v $(pwd):/app cordova-build (1 minuto)
+
+Vantagens:
+- Evita o "funciona na minha máquina'
+- Facilita CI/CD (deploy automático)
+- Qualquer dev consegue fazer build sem instalações complexas
+Desafios
+- Tamanho da imagem Docker (pode ficar pesada com Android SDK)
+- Performance/latência em Windows/Mac (Docker roda em VM)
+
+! Por Que Cordova Empacota App Web em Containers Nativos?
+O Processo
+┌─────────────────────────────────────────────────────────┐
+│ 1. Seu App Web (HTML/CSS/JS)                            │
+└────────────────────┬────────────────────────────────────┘
+                     ↓
+┌─────────────────────────────────────────────────────────┐
+│ 2. Cordova Compila o Projeto                            │
+│    - Pega o código web                                  │
+│    - Adiciona plugins de acesso ao hardware             │
+│    - Cria estrutura nativa Android/iOS                  │
+└────────────────────┬────────────────────────────────────┘
+                     ↓
+┌─────────────────────────────────────────────────────────┐
+│ 3. WebView Nativo (O Container)                         │
+│    ┌───────────────────────────────┐                    │
+│    │  WebView do SO                │                    │
+│    │ (Chrome em Android,           │                    │
+│    │  Safari em iOS)               │                    │
+│    │                               │                    │
+│    │  [Seu app web rodando aqui]   │                    │
+│    └───────────────────────────────┘                    │
+└────────────────────┬────────────────────────────────────┘
+                     ↓
+┌─────────────────────────────────────────────────────────┐
+│ 4. Container Final: APK/IPA                             │
+│    - App executável do sistema operacional              │
+│    - Pronto para distribuir na Play Store/App Store     │
+└─────────────────────────────────────────────────────────┘
+Por Que "Container Nativo"?
+- WebView é um container do SO - é um componente nativo que executa código web isolado
+- APK/IPA é o container executável - é como o SO "empacota" e distribui apps
+- Acesso a APIs nativas - via plugins JavaScript, seu app web consegue chamadas de câmera, GPS, etc.
+
+Resumo: 
+Cordova = Bridge entre o mundo web e o mundo nativo
+
+Seu App Web
+    ↓
+[Plugins de Cordova - ponte]
+    ↓
+APIs Nativas Android/iOS
+    ↓
+Hardware do dispositivo

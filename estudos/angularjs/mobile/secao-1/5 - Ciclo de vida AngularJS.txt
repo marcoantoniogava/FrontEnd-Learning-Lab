@@ -1,0 +1,392 @@
+O ciclo de vida do AngularJS é o processo de funcionamento
+da aplicação desde o momento em que ela é carregada até o 
+instante em que a tela é atualizada conforme os dados mudam.
+
+Basicamente, é a forma como ele inicia, conecta HTML com JavaScript,
+observa mudanças e atualiza a interface.
+
+Visão geral do ciclo:
+1 - Página carrega
+2 - AngularJS é inicializado
+3 - O módulo é carregado
+4 - Controllers, services, directives e outros artefatos são registrados
+5 - O AngularJS compila o HTML
+6 - Ele conecta a view ao JavaScript
+7 - Ele observa mudanças nas variáveis
+8 - Atualiza a tela conforma mudanças
+
+________________________________________________________________________________
+
+1 - Inicialização da aplicação {
+    A aplicação começa quando o framework encontra no HTML algo como:
+    <html ng-app="app">
+    ou quando a inicialização é feita manualmente.
+
+    ng-app é uma diretiva nativa do AngularJS que determina o começo da aplicação AngularJS.
+}
+
+________________________________________________________________________________
+
+2 - Carregamento do módulo {
+    Quando o AngularJS encontra ng-app="app" ele procura esse módulo no JavaScript.
+
+    angular.module('app', []);
+}
+
+________________________________________________________________________________
+
+3 - Fase de configuração: config {
+    depois que o módulo é encontrado, o AngularJS executa a fase de configuração.
+
+    Exemplo:
+    angular.module('app').config(function () {
+        console.log('config executado');
+    })
+}
+
+________________________________________________________________________________
+
+4 - Fase de execução: run {
+    depois da configuração, o angular executa o bloco run.
+
+    exemplo:
+    angular.module('app').run(function() {
+        console.log('app iniciada');
+    });
+
+    run é um bloco executado para rodar a aplicação.
+    serve para:
+    - registrar eventos globais
+    - fazer inicializações
+    - ligar componentes gerais da app
+}
+
+________________________________________________________________________________
+
+5 - Compilação do HTML {
+    Depois de carregar módulo e blocos iniciais, o AngularJS começa a processar o HTML.
+    Compilar significa ler o HTML e identificar tudo que pertence ao AngularJS
+
+    Exemplo:
+    <div ng-controller="MainCtrl">
+        <input ng-model="nome">
+        <p>{{ nome }}</p>
+    </div>
+
+    O Angular lê esse trecho e percebe:
+
+    existe um ng-controller
+    existe um ng-model
+    existe uma interpolação {{ nome }}
+}
+
+________________________________________________________________________________
+
+6 - Link entre HTML e JavaScript {
+    Depois de compilar, o AngularJS conecta o HTML ao JavaScript.
+    Esse processo é chamado de binding.
+    
+    No AngularJS, aparece com:
+    {{}}
+    ng-model
+    ng-repeat
+    ng-show
+    ng-click
+}
+
+________________________________________________________________________________
+
+
+7 - Interpolação {{ }} {
+    Quando você escreve <p> {{nome}} </p>
+    O AngularJS entende que precisa buscar a variável nome no contexto daquele trecho.
+
+    Interpolação é o processo de pegar uma EXPRESSÃO do JavaScript e exibir seu resultado no HTML.
+    usada para mostrar: 
+    - variáveis
+    - expressões simples
+    - propriedades de objetos
+    - retorno de funções simples
+
+    exemplos:
+    {{ nome }}
+    {{ usuario.email }}
+    {{ 2 + 2 }}
+    {{ saudacao() }}
+}
+
+________________________________________________________________________________
+
+
+8 - Scope (consultar documento separado) 
+
+________________________________________________________________________________
+
+
+9 - Two-way data binding {
+    Esse é um dos conceitos mais famosos do AngularJS.
+
+    <div ng-controller="MainCtrl">
+        <input ng-model="nome">
+        <p>{{ nome }}</p>
+    </div>
+
+    app.controller('MainCtrl', function($scope) {
+        $scope.nome = '';
+    });
+
+    O que acontece
+    usuário digita no input
+    ng-model atualiza $scope.nome
+    {{ nome }} é atualizado automaticamente
+
+    E o contrário também funciona:
+
+    o controller muda $scope.nome
+    a tela atualiza
+    O que é two-way data binding
+
+    É a atualização em duas direções:
+
+    da view para o JavaScript
+    do JavaScript para a view
+}
+
+________________________________________________________________________________
+
+
+10 - Digest cycle (consultar documento separado)
+
+________________________________________________________________________________
+
+
+11 - Watchers {
+    Para o digest funcionar, o Angular usa watchers.
+
+    O que é um watcher
+
+    Watcher é um observador.
+
+    Ele observa expressões ligadas à view, como:
+
+    {{ nome }}
+    ng-model="nome"
+    ng-show="ativo"
+
+    Exemplo:
+
+    <p>{{ nome }}</p>
+
+    O Angular cria um watcher para acompanhar nome.
+
+    Se nome mudar, a tela é atualizada.
+
+    Observação importante
+
+    Quanto mais watchers a tela tiver, mais trabalho o Angular terá no digest cycle.
+
+    Por isso, aplicações AngularJS grandes podem sofrer com performance.
+}
+
+________________________________________________________________________________
+
+
+12 - Quando o digest roda automaticamente {
+    O Angular sabe rodar o digest automaticamente em eventos que ele mesmo controla.
+
+    Exemplos:
+
+    ng-click
+    ng-change
+    $http
+    $timeout
+    $interval
+    eventos internos do framework
+
+    Exemplo:
+
+    <button ng-click="alterarNome()">Alterar</button>
+    $scope.alterarNome = function() {
+        $scope.nome = 'Novo nome';
+    };
+
+    Aqui a tela atualiza sozinha porque o Angular sabe que essa alteração aconteceu.
+}
+
+________________________________________________________________________________
+
+
+13 - Quando o digest não roda automaticamente {
+    Se a mudança acontecer fora do AngularJS, ele não percebe sozinho.
+
+    Exemplo com JavaScript puro:
+
+    setTimeout(function() {
+        $scope.nome = 'Novo nome';
+    }, 1000);
+
+    Nesse caso, o valor muda no JavaScript, mas a tela pode não atualizar.
+
+    Por quê
+
+    Porque setTimeout pertence ao JavaScript puro, não ao AngularJS.
+
+    O Angular não foi avisado de que algo mudou.
+}
+
+________________________________________________________________________________
+
+
+14 - $apply() {
+    Para avisar o Angular que algo externo mudou, usamos $apply().
+
+    Exemplo:
+    setTimeout(function() {
+        $scope.$apply(function() {
+            $scope.nome = 'Novo nome';
+        });
+    }, 1000);
+
+    O que $apply() faz
+
+    Ele diz ao Angular:
+
+    “rode o digest cycle agora, porque eu alterei algo fora do framework”
+
+    Então o Angular reavalia os watchers e atualiza a tela.
+}
+
+________________________________________________________________________________
+
+
+15 - $timeout {
+    $timeout é a versão AngularJS do setTimeout.
+
+    Exemplo:
+
+    $timeout(function() {
+        $scope.nome = 'Novo nome';
+    }, 1000);
+    
+    Diferença entre $timeout e setTimeout
+    setTimeout
+
+    É JavaScript puro. O Angular não acompanha.
+
+    $timeout
+
+    É do AngularJS. Ele já chama o digest automaticamente.
+
+    Por isso, com $timeout, normalmente não precisa usar $apply().
+}
+
+________________________________________________________________________________
+
+
+16 - Exemplo prático comparando {
+    Exemplo 1: sem atualizar a view
+
+    setTimeout(function() {
+        $scope.nome = 'Nícolas';
+    }, 1000);
+
+    Pode mudar a variável, mas a interface não atualizar na hora.
+
+    Exemplo 2: usando $apply()
+
+    setTimeout(function() {
+        $scope.$apply(function() {
+            $scope.nome = 'Nícolas';
+        });
+    }, 1000);
+
+    Agora o Angular é avisado e atualiza a tela.
+
+    Exemplo 3: usando $timeout
+
+    $timeout(function() {
+        $scope.nome = 'Nícolas';
+    }, 1000);
+
+    Mesma ideia, só que de forma mais integrada ao Angular.
+}
+
+________________________________________________________________________________
+
+
+17 - $destroy{
+    Quando uma tela ou escopo deixa de existir, o Angular dispara o evento $destroy.
+
+    Exemplo:
+
+    $scope.$on('$destroy', function() {
+        console.log('controller destruído');
+    });
+
+    Para que serve
+    Serve para limpar recursos e evitar vazamento de memória.
+
+    Exemplos de uso:
+    - remover event listeners
+    - cancelar intervalos
+    - destruir plugins
+    - soltar objetos do DOM
+
+    No teu caso, isso é muito importante em controllers que adicionam addEventListener.
+
+    Exemplo:
+
+    tela.addEventListener('scroll', handleScroll);
+
+    $scope.$on('$destroy', function() {
+        tela.removeEventListener('scroll', handleScroll);
+    });
+
+    Isso é boa prática real de mercado.
+}
+
+________________________________________________________________________________
+
+
+18 - Ordem simplificada do ciclo de vida {
+    1. HTML carrega
+    2. Angular encontra ng-app
+    3. módulo é carregado
+    4. config é executado
+    5. run é executado
+    6. HTML é compilado
+    7. controller é instanciado
+    8. bindings são criados
+    9. digest cycle monitora mudanças
+    10. view é atualizada quando necessário
+    11. quando a tela morre, $destroy é disparado
+}
+
+________________________________________________________________________________
+
+
+Erros comuns ligados ao ciclo de vida {
+    1. Alterar variável fora do Angular e esquecer $apply()
+
+    A tela não atualiza.
+
+    2. Usar $apply() sem necessidade
+
+    Pode gerar erro como:
+
+    $digest already in progress
+
+    3. Adicionar listener e não remover no $destroy
+
+    Pode causar vazamento de memória.
+
+    4. Colocar lógica demais no template
+
+    Aumenta watchers e piora performance.
+
+    5. Não entender quando o Angular sabe ou não sabe da mudança
+
+    Isso gera comportamento “misterioso”.
+}
+
+________________________________________________________________________________

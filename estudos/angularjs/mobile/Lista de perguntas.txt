@@ -1,0 +1,154 @@
+LISTA DE PERGUNTAS - ANGULARJS / CORDOVA / MOBILE
+
+____________________________________________________
+
+FUNDAMENTOS DO ANGULARJS
+
+1. Explique com suas palavras o que é o AngularJS e qual problema ele resolve. (Teoria_do_AngularJS.txt)
+
+2. O que é um módulo no AngularJS e por que ele é essencial para a aplicação? (Estrutura_AngularJS.txt)
+
+3. Qual a diferença entre angular.module('app', []) e angular.module('app')? (Estrutura_AngularJS.txt)
+
+4. O que acontece se o módulo principal não for encontrado pelo ng-app? (Teoria_do_AngularJS.txt)
+
+____________________________________________________
+
+ESTRUTURA E ARQUITETURA
+
+5. Qual a responsabilidade do index.js dentro de um projeto AngularJS? (Estrutura_AngularJS.txt)
+
+6. Qual a diferença entre controller e service na prática? (Estrutura_AngularJS.txt)
+
+7. Por que não é recomendado colocar lógica de negócio dentro de controllers? (Estrutura_AngularJS.txt)
+
+8. Explique o fluxo completo: HTML → Controller → Service → Controller → HTML (Estrutura_AngularJS.txt)
+
+9. Qual a diferença entre factory e service? Quando você escolheria cada um? (Estrutura_AngularJS.txt)
+
+10. O que são artefatos do AngularJS? Cite pelo menos 4 e suas funções. (Teoria_do_AngularJS.txt)
+
+____________________________________________________
+
+VIEW E DATA BINDING
+
+11. O que acontece por trás quando usamos {{ nome }} no HTML? (Pratica_AngularJS.txt)
+
+12. Explique o conceito de two-way data binding com um exemplo prático. (Pratica_AngularJS.txt)
+
+13. Qual a diferença entre ng-model e {{ }}? (Pratica_AngularJS.txt)
+
+14. O que acontece se você alterar uma variável no $scope? A tela sempre atualiza? Explique. (Scope e Digest Cycle.txt)
+
+____________________________________________________
+
+CICLO DE VIDA E DIGEST
+
+15. Explique o que é o digest cycle e qual seu papel no AngularJS. (Scope e Digest Cycle.txt)
+
+16. O que são watchers e qual o impacto deles na performance? (Scope e Digest Cycle.txt)
+
+17. Em que situações o Angular roda o digest automaticamente? (Ciclo de vida AngularJS.txt)
+
+18. Em que situações ele NÃO roda automaticamente? (Ciclo de vida AngularJS.txt)
+
+19. Qual a diferença entre $apply() e $timeout? (Ciclo de vida AngularJS.txt)
+
+20. O que acontece se você chamar $apply() durante um digest já em execução? (Ciclo de vida AngularJS.txt)
+
+____________________________________________________
+
+ROOTSCOPE E HERANÇA
+
+21. O que é $rootScope e qual sua relação com $scope? (Scope e Digest Cycle.txt)
+
+22. Explique a hierarquia de scopes no AngularJS. (Scope e Digest Cycle.txt)
+
+23. Dê um exemplo de uso válido de $rootScope. (Scope e Digest Cycle.txt)
+
+24. Por que não é recomendado usar $rootScope para tudo? (Scope e Digest Cycle.txt)
+
+25. Qual alternativa profissional ao uso de $rootScope para compartilhar dados? (Scope e Digest Cycle.txt)
+
+____________________________________________________
+
+ASSÍNCRONO
+
+26. O que é programação assíncrona? (Promises e async.txt)
+
+27. Por que este código não funciona corretamente?
+
+var dados = sql.select(...);
+console.log(dados);
+
+(Promises e async.txt)
+
+28. O que é um callback? (Promises e async.txt)
+
+29. Explique o problema do “callback hell”. (Promises e async.txt)
+
+30. O que é uma Promise e quais são seus estados? (Promises e async.txt)
+
+31. Qual a diferença entre .then() e .catch()? (Promises e async.txt)
+
+32. Qual a vantagem de usar async/await em relação a .then()? (Promises e async.txt)
+
+33. O que acontece se você usar await fora de uma função async? (Promises e async.txt)
+
+____________________________________________________
+
+BANCO LOCAL
+
+34. O que é banco local e por que ele é usado em apps mobile? (Banco local.txt)
+
+35. Qual a vantagem de usar SQLite em relação a chamadas diretas à API? (Banco local.txt)
+
+36. Explique o conceito de offline-first. (Banco local.txt)
+
+37. Por que operações de banco local são assíncronas? (Banco local.txt)
+
+38. Descreva o fluxo completo de uma consulta ao banco local. (Banco local.txt)
+
+39. O que pode acontecer se você não tratar corretamente callbacks de banco? (Banco local.txt)
+
+____________________________________________________
+
+CORDOVA E MOBILE
+
+40. O que é o Cordova e como ele funciona? (Cordova.txt)
+
+41. O que é uma WebView? (Cordova.txt)
+
+42. O que são plugins no Cordova? (Cordova.txt)
+
+43. Explique o fluxo: JavaScript → Plugin → Código nativo (Cordova.txt)
+
+44. O que é o evento deviceready e por que ele é importante? (Cordova.txt)
+
+____________________________________________________
+
+BUILD, SDK E GRADLE
+
+45. O que é um SDK? (SDK.txt)
+
+46. Qual a diferença entre SDK e API? (SDK.txt)
+
+47. O que é o Gradle e qual seu papel no build do app? (Gradle.txt)
+
+48. Por que você normalmente não interage diretamente com o Gradle no Cordova? (Gradle.txt)
+
+49. Em que situações você precisaria mexer no Gradle? (Gradle.txt)
+
+____________________________________________________
+
+PERGUNTAS AVANÇADAS
+
+50. Quando você escolheria usar $rootScope ao invés de um service? (Scope e Digest Cycle.txt)
+
+51. Explique um cenário onde a tela não atualiza e como resolver. (Ciclo de vida AngularJS.txt)
+
+52. Qual o impacto de muitos watchers em uma tela? (Scope e Digest Cycle.txt)
+
+53. Como você organizaria um projeto AngularJS grande pensando em manutenção? (Estrutura_AngularJS.txt)
+
+54. Como você explicaria o fluxo completo do app Agrosys para um novo desenvolvedor? (Banco local.txt + Estrutura_AngularJS.txt)

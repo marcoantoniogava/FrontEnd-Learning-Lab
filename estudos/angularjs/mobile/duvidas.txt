@@ -1,0 +1,24 @@
+#1 - qual a diferença prática entre timeout e $scope.apply()? 
+
+  R: $scope.$apply() → força o Angular a atualizar a tela
+$timeout → agenda algo + já chama o ciclo do Angular automaticamente
+
+    exemplo $apply()
+setTimeout(function() {
+    $scope.nome = "Nícolas";
+    $scope.$apply();
+}, 1000);
+
+aqui você usa porque o setTimeout é JS puro, Angular não sabe que algo mudou
+
+exemplo $timeout
+$timeout(function() {
+    $scope.nome = "Nícolas";
+}, 1000);
+
+aqui NÃO precisa de $apply()
+  
+  
+#2 - é necessário definir a variavel scope sempre?
+
+R: não é obrigatório, mas é boa prática. para evitar erros e melhorar entendimento do código.

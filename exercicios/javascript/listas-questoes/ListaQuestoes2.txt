@@ -1,0 +1,55 @@
+1 - Manipulação avançada de arrays e objetos
+
+Map, reduce, filter, find, some, every, flatMap
+
+Clonagem profunda de objetos (structuredClone, JSON, lodash)
+
+Destructuring complexo (arrays, objetos, funções)
+
+Exercício rápido: pegar um array de usuários, filtrar por idade, agrupar por cidade e retornar um objeto {cidade: [usuarios]}
+
+
+
+
+2 - Array / Object Avançado
+
+dado um array de objetos representando produtos {nome, preco, categoria}, faça:
+
+um objeto que agrupe produtos por categoria
+
+calcule o total de preço por categoria
+
+retorne uma lista só com nomes dos produtos que custam mais de 50
+
+
+
+
+3 - Funções e Closures
+
+crie uma função contador(inicial) que retorna outra função que ao ser chamada incrementa e retorna o valor atual
+
+teste criando 2 contadores diferentes, veja se cada um mantém seu próprio estado
+
+
+
+
+4 - Array / Funções Funcionais
+
+usando apenas map, filter e reduce, dado um array de números [1,2,3,4,5,6,7,8,9,10]:
+
+filtre apenas os pares
+
+multiplique cada um por 3
+
+calcule a soma final
+
+
+
+
+5 - Async / Promise / Fetch Simulado
+
+crie uma função simulaFetch(url) que retorna uma promise que resolve em x segundos (random de 1 a 3s) com a string "dados da url: <url>"
+
+faça um loop pra chamar 5 urls diferentes e retorne quando todas terminarem (Promise.all)
+
+depois, faça um outro teste retornando assim que a primeira terminar (Promise.race)

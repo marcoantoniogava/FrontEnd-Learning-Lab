@@ -1,0 +1,139 @@
+O Gradle é uma ferramenta de automatação de build.
+
+Ou seja:
+Ele pega teu projeto e transforma em um app pronto (APK/AAB)
+
+Exemplo de Cordova com a Agrosys:
+Quando rodamos cordova build android
+por baixo dos panos:
+cordova -> chama gradle -> gera APK
+
+build = transformar código em app executável
+
+fluxo real
+código (html/js/css + plugins)
+        ↓
+cordova
+        ↓
+projeto android (java/kotlin)
+        ↓
+gradle
+        ↓
+APK / AAB
+
+    O que o Gradle faz:
+
+1 - Resolve dependências
+baixa bibliotecas:
+- plugins cordova
+- libs android 
+- firebase, encontra
+
+2 - compila código
+- java/kotlin -> bytecode
+- organiza recursos
+
+3 - processa recursos
+- imagens
+- layouts
+- manifest
+
+4 - junta tudo
+- código + libs + assets
+
+5 - gera o APK/AAB
+- arquivo final instalável
+
+    Arquivos importantes do gradle
+no android (inclusive cordova):
+
+build.gradle
+é o arquivo principal de configuração
+exemplo simplificado {
+    android {
+        compileSdkVersion 33
+
+        defaultConfig {
+            applicationId "com.app.exemplo"
+            minSdkVersion 21
+            targetSdkVersion 33
+        }
+    }
+}
+
+o que você configura aqui
+- versão do Android
+- id do app
+- versão do app
+- dependências
+
+dependências
+
+dependencies {
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+}
+
+Gradle baixa automaticamente
+
+    Conceito importante: tasks
+gradle funciona com:
+tasks (tarefas)
+
+exemplo mental:
+task: limpar projeto
+task: compilar
+task: gerar APK
+
+ao rodar "gradle build"
+ele executa várias tasks em sequência
+
+    No android
+tipos de build
+
+buildTypes {
+    debug {}
+    release {}
+}
+debug
+- usado no desenvolvimento
+- sem otimização
+release
+- usado pra produção
+- otimizado
+- assinado
+
+    assinatura 
+
+para publicar app precisa assinar
+
+signingConfigs {
+    release {
+        storeFile file("keystore.jks")
+        storePassword "123"
+        keyAlias "app"
+        keyPassword "123"
+    }
+}
+
+!!! OBS: na prática com cordova, quase nunca chamamos o Gradle diretamente.
+quando você roda:
+
+cordova build android
+
+o fluxo real é:
+
+seu código
+↓
+cordova prepara projeto android
+↓
+cordova chama gradle automaticamente
+↓
+gradle faz o build
+↓
+apk gerado
+
+ou seja:
+
+você usa cordova
+o cordova usa gradle
+
