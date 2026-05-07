@@ -67,7 +67,7 @@ Os participantes deverão:
 
 | Nome               | Fork              |
 | ------------------ | ----------------- |
-| Marco Antonio Gava | colocar-link-aqui |
+| Marco Antonio Gava | [Clique para acessar](https://github.com/marcoantoniogava/FrontEnd-Learning-Lab) |
 
 ---
 
