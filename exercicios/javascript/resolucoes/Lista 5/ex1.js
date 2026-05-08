@@ -27,14 +27,14 @@ function Pedido(id, cliente, valor) { //função construtora Pedido
     this.valor = valor;
 };
 
-Pedido.prototype.aplicarDesconto = function (percentual) { //adicionando no prototype o método que aplica um desconto em um pedido
+Pedido.prototype.aplicarDesconto = function(percentual) { //adicionando no prototype o método que aplica um desconto em um pedido
 
     this.valor = this.valor - ((this.valor / 100) * percentual); //mudando o valor original pro novo com desconto aplicado
 
     return this.valor; //retorna o valor
 };
 
-Pedido.prototype.ehValido = function () { //adicionando no prototype o método que verifica um pedido é válido
+Pedido.prototype.ehValido = function() { //adicionando no prototype o método que verifica um pedido é válido
     return this.valor > 0; //retorna true se o valor do pedido for maior que 0
 };
 
