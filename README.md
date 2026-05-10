@@ -68,7 +68,7 @@ Os participantes deverão:
 | Nome               | Fork              |
 | ------------------ | ----------------- |
 | Marco Antonio Gava | [Clique para acessar](https://github.com/marcoantoniogava/FrontEnd-Learning-Lab) |
-
+| Vinícius Gabriel | [Clique para acessar](https://github.com/VinokaBRazilian/FrontEnd-Learning-Lab) |
 ---
 
 # Tecnologias abordadas
