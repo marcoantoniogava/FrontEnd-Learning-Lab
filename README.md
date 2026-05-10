@@ -109,3 +109,14 @@ O foco não é apenas fazer código funcionar, mas compreender como e por que el
 # Observação
 
 O conteúdo do repositório está em constante evolução e pode receber novas trilhas, exercícios, melhorias estruturais e aprofundamentos técnicos ao longo do tempo.
+
+# Extensões recomendadas:
+
+- Code Runner
+- Error Lens
+
+Opcional:
+- Git Graph
+- Auto Rename Tag
+- Live Server
+- Material Icon Theme
