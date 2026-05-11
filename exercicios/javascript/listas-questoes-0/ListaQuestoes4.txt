@@ -1,0 +1,179 @@
+1. (array + reduce + estrutura de dados)
+
+dado:
+
+const pedidos = [
+  { cliente: "joao", total: 100 },
+  { cliente: "maria", total: 200 },
+  { cliente: "joao", total: 50 }
+];
+
+retorne um objeto agrupado por cliente:
+
+{
+  joao: 150,
+  maria: 200
+}
+
+👉 obrigatório usar reduce
+
+
+
+
+2. (função pura + imutabilidade)
+
+crie uma função atualizarUsuario(usuario, novosDados) que:
+
+NÃO altera o objeto original
+retorna um novo objeto atualizado
+
+exemplo:
+
+const user = { nome: "joao", idade: 20 };
+
+const atualizado = atualizarUsuario(user, { idade: 25 });
+
+
+
+
+3. (this + bind + contexto)
+
+explique e resolva:
+
+const usuario = {
+  nome: "joao",
+  saudacao() {
+    return `ola, ${this.nome}`;
+  }
+};
+
+const fn = usuario.saudacao;
+
+console.log(fn());
+por que retorna errado?
+corrija usando bind
+
+
+
+4. (prototype + herança)
+
+crie:
+
+function Pessoa(nome)
+function Funcionario(nome, salario)
+
+faça Funcionario herdar de Pessoa
+
+adicionar método:
+
+mostrarSalario
+
+👉 sem usar class, só prototype
+
+
+
+
+5. (array + deduplicação)
+
+dado:
+
+const numeros = [1, 2, 2, 3, 4, 4, 5];
+
+retorne um array sem valores duplicados
+
+👉 não pode usar Set
+
+
+
+
+6. (promise + encadeamento)
+
+crie 3 funções:
+
+buscarUsuario
+buscarPedidos
+calcularTotal
+
+cada uma retorna uma Promise
+
+encadeie para:
+
+buscar usuário
+buscar pedidos dele
+calcular total gasto
+-- depois de concluido: --
+trate erro com .catch
+simule erro em alguma etapa
+
+
+
+
+8. função de alto nível com retry (promises)
+
+implemente uma função chamada:
+
+executarComRetry(fn, tentativas)
+descrição
+
+essa função deve receber:
+
+fn: uma função que retorna uma Promise
+tentativas: número máximo de tentativas em caso de falha
+
+comportamento esperado:
+- a função deve executar fn
+- se a Promise for resolvida, retornar o resultado imediatamente
+- se a Promise for rejeitada, tentar executar novamente
+- repetir até atingir o limite de tentativas
+- se todas as tentativas falharem, deve lançar (reject) o último erro ocorrido
+- regras importantes
+- fn deve ser chamada novamente a cada tentativa (não reutilizar resultado anterior)
+- não usar variáveis globais para controle
+- o retorno de executarComRetry deve ser uma Promise
+- respeitar o número máximo de tentativas
+
+
+
+
+9. debounce (controle de execução)
+
+implemente uma função chamada:
+
+debounce(fn, delay)
+descrição
+
+essa função deve receber:
+
+fn: função que será executada
+delay: tempo em milissegundos
+
+e retornar uma nova função controlada (função de alto nível)
+
+comportamento esperado:
+- a função retornada pode ser chamada várias vezes
+- a execução de fn deve ser adiada
+- se a função for chamada novamente antes do tempo (delay) acabar:
+- o timer anterior deve ser cancelado
+- um novo timer deve começar
+- fn só deve ser executada quando pararem de chamar a função por X ms
+
+
+
+
+
+10. (estrutura + lógica)
+
+crie uma função que recebe:
+
+[
+  { nome: "joao", idade: 17 },
+  { nome: "maria", idade: 22 },
+  { nome: "pedro", idade: 17 }
+]
+
+retorne:
+
+{
+  menores: [...],
+  maiores: [...]
+}
