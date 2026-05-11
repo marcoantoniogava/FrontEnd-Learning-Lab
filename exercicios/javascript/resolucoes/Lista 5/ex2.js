@@ -61,5 +61,3 @@ Promise.all([carregaPontuacoes(u1), carregaPontuacoes(u2), carregaPontuacoes(u3)
   return ranking;
 })
 .catch((erro) => console.log(erro));
-
-//MUDAR NOME DO ARQUIVO PRA EX2.JS
