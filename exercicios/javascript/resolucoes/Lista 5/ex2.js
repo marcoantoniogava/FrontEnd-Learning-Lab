@@ -22,9 +22,9 @@ function Usuario(nome, pontuacoes) { //função construtora
   this.pontuacoes = pontuacoes;
 };
 
-Usuario.prototype.mediaPontuacao = function() { //adicionando método mediaPontuacao no prototype de Usuario
+Usuario.prototype.mediaPontuacao = function () { //adicionando método mediaPontuacao no prototype de Usuario
   let total = 0; //total começa em 0
-  
+
   this.pontuacoes.forEach(pontuacao => { //pega todas as pontuações, soma elas e gera um total
     total += pontuacao;
   });
@@ -37,8 +37,8 @@ function carregaPontuacoes(usuario) {
   return new Promise((resolve, reject) => {
     setTimeout(() => { //timeout de 2s pra simular carregamento
       for (let i = 0; i < 3; i++) { //loop de 3
-      let pontuacao = Math.floor(Math.random() * 10) + 1; //gera pontuação aleatória até 10
-      usuario.pontuacoes.push(pontuacao); //coloca a pontuação no array de pontuações do usuário
+        let pontuacao = Math.floor(Math.random() * 10) + 1; //gera pontuação aleatória até 10
+        usuario.pontuacoes.push(pontuacao); //coloca a pontuação no array de pontuações do usuário
       };
       resolve(usuario); //resolve (retorna) com o usuário atualizado (com pontuações)
     }, 2000);
@@ -53,11 +53,10 @@ const u5 = new Usuario("Vitor", []);
 
 //carregarPontuacoes retorna uma promise, entao aq tô passando um array com as promises pro Promise.all
 Promise.all([carregaPontuacoes(u1), carregaPontuacoes(u2), carregaPontuacoes(u3), carregaPontuacoes(u4), carregaPontuacoes(u5)]) //cada um desse vai retornar o usuario atualizado (la do resolve(usuario))
-.then((usuarios) => {
-  let ranking = usuarios.map(usuario => ({ nome: usuario.nome, media: usuario.mediaPontuacao() })) //cria objeto com nome e média de cada usuário
-  .sort((usuario1, usuario2) => usuario2.media - usuario1.media); //vai comparando todos os usuário e ordena do maior pro menor
+  .then((usuarios) => {
+    let ranking = usuarios.map(usuario => ({ nome: usuario.nome, media: usuario.mediaPontuacao() })) //cria objeto com nome e média de cada usuário
+      .sort((usuario1, usuario2) => usuario2.media - usuario1.media); //vai comparando todos os usuário e ordena do maior pro menor
 
-  console.log("Ranking:", ranking);
-  return ranking;
-})
-.catch((erro) => console.log(erro));
+    console.log("Ranking:", ranking);
+  })
+  .catch((erro) => console.log(erro));

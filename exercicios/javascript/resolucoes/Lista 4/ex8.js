@@ -37,10 +37,12 @@ function executarComRetry(fn, tentativas)
 
 function fPromise() {
     return new Promise((resolve, reject) => {
-        resolve("resolvi");
-        //reject("rejeitei");
+        //resolve("resolvi");
+        reject("rejeitei");
     });
 };
 
 //mudar numero de tentartivas (ta como 3) e descomentar o reject pra testar
 executarComRetry(fPromise, 3).then(console.log).catch(console.log);
+
+

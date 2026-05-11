@@ -23,8 +23,7 @@ function retornaMaiorMenor(arr) {
 
         if (idade < 18) {
             acc.menores.push(pessoa);
-        }
-        else {
+        } else {
             acc.maiores.push(pessoa);
         }
 
